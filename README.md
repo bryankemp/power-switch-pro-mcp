@@ -387,3 +387,4 @@ Contributions are welcome! Please:
 - **Issues**: GitHub Issues
 - **Email**: bryan@kempville.com
 - **Documentation**: [power-switch-pro.readthedocs.io](https://power-switch-pro.readthedocs.io)
+# Test change
