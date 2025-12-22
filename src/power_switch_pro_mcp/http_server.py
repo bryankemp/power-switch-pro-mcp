@@ -262,13 +262,7 @@ def bulk_outlet_operation(action: str, outlet_ids: list[int] | None = None) -> s
 
 if __name__ == "__main__":
     # Run server with HTTP transport
-    import uvicorn
-
-    port = int(os.getenv("PORT", "8000"))
-    host = os.getenv("HOST", "0.0.0.0")
-
-    # Get the FastAPI app from FastMCP
-    app = mcp.get_asgi_app()
-
-    logger.info(f"Starting Power Switch Pro MCP HTTP server on {host}:{port}")
-    uvicorn.run(app, host=host, port=port)
+    # Note: FastMCP runs on default host 0.0.0.0:8000
+    # Port can be configured via environment variable in Docker
+    logger.info("Starting Power Switch Pro MCP HTTP server on 0.0.0.0:8000")
+    mcp.run(transport="http")
