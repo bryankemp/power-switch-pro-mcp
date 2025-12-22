@@ -1,0 +1,257 @@
+# Power Switch Pro MCP Server
+
+An MCP (Model Context Protocol) server that provides tools for controlling and monitoring Digital Loggers Power Switch Pro devices. This allows AI assistants and other MCP clients to interact with your power switch hardware.
+
+## Features
+
+- 🔌 **Outlet Control** - Turn outlets on/off/cycle individually or in bulk
+- 📊 **Power Monitoring** - Read real-time voltage, current, power, and energy metrics
+- 📝 **Device Management** - Get device info and configure outlet names
+- 🔒 **Secure** - Uses HTTP Digest Authentication via environment variables
+- 🚀 **Easy Integration** - Works with any MCP-compatible client (Warp, Claude Desktop, etc.)
+
+## Installation
+
+### Prerequisites
+
+- Python 3.10 or higher
+- A Digital Loggers Power Switch Pro device with firmware 1.7.0+
+- Network access to your device
+
+### Install from Source
+
+```bash
+git clone <repository-url>
+cd power-switch-pro-mcp
+pip install -e .
+```
+
+### Install from PyPI (when published)
+
+```bash
+pip install power-switch-pro-mcp
+```
+
+## Configuration
+
+The MCP server is configured via environment variables:
+
+- `POWER_SWITCH_HOST` - IP address or hostname of your device (required)
+- `POWER_SWITCH_PASSWORD` - Admin password (required)
+- `POWER_SWITCH_USERNAME` - Username (default: "admin")
+- `POWER_SWITCH_USE_HTTPS` - Use HTTPS instead of HTTP (default: "false")
+
+### For Warp
+
+Add to your Warp MCP settings configuration file:
+
+```json
+{
+  "mcpServers": {
+    "power-switch-pro": {
+      "command": "python",
+      "args": ["-m", "power_switch_pro_mcp.server"],
+      "env": {
+        "POWER_SWITCH_HOST": "192.168.0.100",
+        "POWER_SWITCH_PASSWORD": "your-password",
+        "POWER_SWITCH_USERNAME": "admin",
+        "POWER_SWITCH_USE_HTTPS": "false"
+      }
+    }
+  }
+}
+```
+
+### For Claude Desktop
+
+Add to your Claude Desktop MCP settings (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+
+```json
+{
+  "mcpServers": {
+    "power-switch-pro": {
+      "command": "python",
+      "args": ["-m", "power_switch_pro_mcp.server"],
+      "env": {
+        "POWER_SWITCH_HOST": "192.168.0.100",
+        "POWER_SWITCH_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+### For Other MCP Clients
+
+Refer to your MCP client's documentation for how to configure external MCP servers. You'll need to:
+
+1. Set the command to run: `python -m power_switch_pro_mcp.server`
+2. Configure the required environment variables
+
+## Available Tools
+
+The server exposes the following MCP tools:
+
+### Outlet Control
+
+- **`outlet_on`** - Turn on a specific outlet
+  - Parameters: `outlet_id` (0-7)
+  
+- **`outlet_off`** - Turn off a specific outlet
+  - Parameters: `outlet_id` (0-7)
+  
+- **`outlet_cycle`** - Power cycle an outlet (off, wait, on)
+  - Parameters: `outlet_id` (0-7)
+
+- **`bulk_outlet_operation`** - Perform operations on multiple outlets
+  - Parameters: `action` ("on", "off", or "cycle"), optional `outlet_ids` array
+
+### Status and Monitoring
+
+- **`get_outlet_state`** - Get the power state of a specific outlet
+  - Parameters: `outlet_id` (0-7)
+  
+- **`get_all_outlet_states`** - Get power states of all outlets
+  
+- **`get_outlet_info`** - Get detailed info about an outlet (name, state, lock status)
+  - Parameters: `outlet_id` (0-7)
+  
+- **`get_power_metrics`** - Get real-time power measurements (voltage, current, power, energy)
+  
+- **`get_device_info`** - Get device information (serial, firmware version, etc.)
+
+### Configuration
+
+- **`set_outlet_name`** - Rename an outlet
+  - Parameters: `outlet_id` (0-7), `name` (string, max 16 chars)
+
+## Usage Examples
+
+Once configured, you can use natural language with your MCP client:
+
+```
+"Turn on outlet 3"
+"What's the current power consumption?"
+"Cycle the server outlet"
+"Show me all outlet states"
+"Rename outlet 0 to 'Lab Server'"
+"Turn off all outlets"
+```
+
+## Testing the Server
+
+You can test the server directly:
+
+```bash
+# Set environment variables
+export POWER_SWITCH_HOST="192.168.0.100"
+export POWER_SWITCH_PASSWORD="your-password"
+
+# Run the server
+python -m power_switch_pro_mcp.server
+```
+
+The server will start and wait for MCP protocol messages on stdin/stdout.
+
+## Development
+
+### Setting Up Development Environment
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd power-switch-pro-mcp
+
+# Install in editable mode with dev dependencies
+pip install -e ".[dev]"
+```
+
+### Code Quality
+
+This project uses:
+
+- **Black** - Code formatting
+- **Ruff** - Fast Python linting
+- **pytest** - Testing framework
+
+Run checks:
+
+```bash
+# Format code
+black src tests
+
+# Lint code
+ruff check src tests
+
+# Run tests
+pytest
+```
+
+## Project Structure
+
+```
+power-switch-pro-mcp/
+├── src/
+│   └── power_switch_pro_mcp/
+│       ├── __init__.py
+│       └── server.py          # Main MCP server implementation
+├── tests/                      # Test suite (coming soon)
+├── pyproject.toml             # Project configuration
+├── README.md                  # This file
+└── .env.example              # Example environment configuration
+```
+
+## Security Considerations
+
+- **Never commit credentials** - Use environment variables or secure configuration
+- **Use HTTPS** - Enable `POWER_SWITCH_USE_HTTPS=true` when possible
+- **Network Security** - Ensure your power switch is on a secure network
+- **Access Control** - Use the admin account or create restricted users on the device
+
+## Troubleshooting
+
+### Server won't start
+
+- Check that environment variables are set correctly
+- Verify you can reach the device at the configured host
+- Ensure the password is correct
+
+### "Authentication Error"
+
+- Double-check your username and password
+- Verify the device firmware supports REST API (1.7.0+)
+
+### Tools not appearing in client
+
+- Restart your MCP client after configuration changes
+- Check the client's logs for MCP server errors
+- Verify the server starts successfully in standalone mode
+
+## Related Projects
+
+- [power-switch-pro](https://github.com/bryankemp/power_switch_pro) - The underlying Python library
+- [MCP Specification](https://modelcontextprotocol.io) - Model Context Protocol documentation
+
+## License
+
+BSD-3-Clause License - See LICENSE file for details
+
+## Author
+
+Bryan Kemp (bryan@kempville.com)
+
+## Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with tests
+4. Run code quality checks
+5. Submit a pull request
+
+## Support
+
+- **Issues**: GitHub Issues
+- **Email**: bryan@kempville.com
+- **Documentation**: [power-switch-pro.readthedocs.io](https://power-switch-pro.readthedocs.io)
