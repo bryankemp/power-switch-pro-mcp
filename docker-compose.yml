@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  power-switch-pro-mcp:
+    build: .
+    container_name: power-switch-pro-mcp
+    ports:
+      - "8000:8000"
+    environment:
+      # Required: Power Switch Pro device configuration
+      POWER_SWITCH_HOST: "${POWER_SWITCH_HOST:-192.168.0.100}"
+      POWER_SWITCH_PASSWORD: "${POWER_SWITCH_PASSWORD}"
+      
+      # Optional: Power Switch Pro device configuration
+      POWER_SWITCH_USERNAME: "${POWER_SWITCH_USERNAME:-admin}"
+      POWER_SWITCH_USE_HTTPS: "${POWER_SWITCH_USE_HTTPS:-false}"
+      
+      # Optional: HTTP server configuration
+      HOST: "${HOST:-0.0.0.0}"
+      PORT: "${PORT:-8000}"
+    restart: unless-stopped
+    networks:
+      - power-switch-network
+    # Health check to ensure server is responding
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  power-switch-network:
+    driver: bridge
