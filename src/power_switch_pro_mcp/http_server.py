@@ -222,24 +222,8 @@ def get_device_info() -> dict[str, Any]:
     """Get device information (serial number, firmware version, etc.)."""
     try:
         device = get_device()
-        info_refs = device.info
-
-        # Resolve $ref references to get actual values
-        result = {}
-        for key, value in info_refs.items():
-            if isinstance(value, dict) and "$ref" in value:
-                # Follow the reference to get actual value
-                try:
-                    ref_path = value["$ref"]
-                    response = device.get(f"config/{ref_path}")
-                    result[key] = response.json()
-                except Exception as ref_error:
-                    logger.warning(f"Could not resolve {key}: {ref_error}")
-                    result[key] = value
-            else:
-                result[key] = value
-
-        return result
+        # Library now resolves $ref references automatically
+        return device.info
     except PowerSwitchError as e:
         logger.error(f"Power Switch error in get_device_info: {e}")
         return {"error": str(e)}
