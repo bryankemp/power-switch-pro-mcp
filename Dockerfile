@@ -1,5 +1,5 @@
 # Multi-stage Dockerfile for Power Switch Pro MCP Server
-FROM python:3.10-slim as base
+FROM python:3.10-slim AS base
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -17,6 +17,8 @@ RUN apt-get update && \
 
 # Copy project files
 COPY pyproject.toml ./
+COPY README.md ./
+COPY LICENSE ./
 COPY src/ ./src/
 
 # Install the package
