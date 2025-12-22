@@ -261,8 +261,8 @@ def bulk_outlet_operation(action: str, outlet_ids: list[int] | None = None) -> s
 
 
 if __name__ == "__main__":
-    # Run server with streamable HTTP transport on port 8000
+    # Run server with HTTP transport on port 8000
     port = int(os.getenv("PORT", "8000"))
     host = os.getenv("HOST", "0.0.0.0")
     logger.info(f"Starting Power Switch Pro MCP HTTP server on {host}:{port}")
-    mcp.run(transport="streamable-http", host=host, port=port)
+    mcp.run(transport="http", host=host, port=port)
