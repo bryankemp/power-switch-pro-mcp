@@ -76,12 +76,15 @@ Add to your Claude Desktop MCP settings (`~/Library/Application Support/Claude/c
       "args": ["-m", "power_switch_pro_mcp.server"],
       "env": {
         "POWER_SWITCH_HOST": "192.168.0.100",
-        "POWER_SWITCH_PASSWORD": "your-password"
+        "POWER_SWITCH_PASSWORD": "your-password",
+        "POWER_SWITCH_USERNAME": "admin"
       }
     }
   }
 }
 ```
+
+**Note**: `POWER_SWITCH_USERNAME` is optional and defaults to "admin" if not specified.
 
 ### For Other MCP Clients
 
@@ -150,6 +153,7 @@ For local MCP clients like Claude Desktop or Warp:
 # Set environment variables
 export POWER_SWITCH_HOST="192.168.0.100"
 export POWER_SWITCH_PASSWORD="your-password"
+export POWER_SWITCH_USERNAME="admin"  # Optional, defaults to "admin"
 
 # Run the stdio server
 python -m power_switch_pro_mcp.server
@@ -165,6 +169,7 @@ For remote access using the MCP streamable-http transport:
 # Set environment variables
 export POWER_SWITCH_HOST="192.168.0.100"
 export POWER_SWITCH_PASSWORD="your-password"
+export POWER_SWITCH_USERNAME="admin"  # Optional, defaults to "admin"
 
 # Run the HTTP server (default port 8000)
 python -m power_switch_pro_mcp.http_server
@@ -190,6 +195,7 @@ docker run -d \
   -p 8000:8000 \
   -e POWER_SWITCH_HOST="192.168.0.100" \
   -e POWER_SWITCH_PASSWORD="your-password" \
+  -e POWER_SWITCH_USERNAME="admin" \
   --name power-switch-pro-mcp \
   ghcr.io/USERNAME/power-switch-pro-mcp:latest
 ```
@@ -224,6 +230,7 @@ docker run -d \
   -p 8000:8000 \
   -e POWER_SWITCH_HOST="192.168.0.100" \
   -e POWER_SWITCH_PASSWORD="your-password" \
+  -e POWER_SWITCH_USERNAME="admin" \
   --name power-switch-pro-mcp \
   power-switch-pro-mcp
 
