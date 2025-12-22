@@ -15,15 +15,13 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy only requirements first for better caching
+# Copy project files
 COPY pyproject.toml ./
-
-# Install dependencies
-RUN pip install --upgrade pip && \
-    pip install -e .
-
-# Copy application code
 COPY src/ ./src/
+
+# Install the package
+RUN pip install --upgrade pip && \
+    pip install .
 
 # Create non-root user for security
 RUN useradd -m -u 1000 mcpuser && \
