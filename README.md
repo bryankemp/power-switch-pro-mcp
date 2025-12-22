@@ -98,10 +98,10 @@ The server exposes the following MCP tools:
 
 - **`outlet_on`** - Turn on a specific outlet
   - Parameters: `outlet_id` (0-7)
-  
+
 - **`outlet_off`** - Turn off a specific outlet
   - Parameters: `outlet_id` (0-7)
-  
+
 - **`outlet_cycle`** - Power cycle an outlet (off, wait, on)
   - Parameters: `outlet_id` (0-7)
 
@@ -112,14 +112,14 @@ The server exposes the following MCP tools:
 
 - **`get_outlet_state`** - Get the power state of a specific outlet
   - Parameters: `outlet_id` (0-7)
-  
+
 - **`get_all_outlet_states`** - Get power states of all outlets
-  
+
 - **`get_outlet_info`** - Get detailed info about an outlet (name, state, lock status)
   - Parameters: `outlet_id` (0-7)
-  
+
 - **`get_power_metrics`** - Get real-time power measurements (voltage, current, power, energy)
-  
+
 - **`get_device_info`** - Get device information (serial, firmware version, etc.)
 
 ### Configuration

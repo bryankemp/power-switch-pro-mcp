@@ -1,6 +1,5 @@
 """Shared test fixtures and configuration for pytest."""
 
-import os
 from unittest.mock import MagicMock
 
 import pytest
@@ -55,7 +54,7 @@ def mock_power_switch():
 @pytest.fixture
 def reset_device_singleton():
     """Reset the global device singleton between tests."""
-    from power_switch_pro_mcp import server, http_server
+    from power_switch_pro_mcp import http_server, server
 
     server._device = None
     http_server._device = None

@@ -4,10 +4,10 @@ services:
   power-switch-pro-mcp:
     # Use pre-built image from GHCR (replace USERNAME with your GitHub username)
     # image: ghcr.io/USERNAME/power-switch-pro-mcp:latest
-    
+
     # Or build locally from source
     build: .
-    
+
     container_name: power-switch-pro-mcp
     ports:
       - "8000:8000"
@@ -15,11 +15,11 @@ services:
       # Required: Power Switch Pro device configuration
       POWER_SWITCH_HOST: "${POWER_SWITCH_HOST:-192.168.0.100}"
       POWER_SWITCH_PASSWORD: "${POWER_SWITCH_PASSWORD}"
-      
+
       # Optional: Power Switch Pro device configuration
       POWER_SWITCH_USERNAME: "${POWER_SWITCH_USERNAME:-admin}"
       POWER_SWITCH_USE_HTTPS: "${POWER_SWITCH_USE_HTTPS:-false}"
-      
+
       # Optional: HTTP server configuration
       HOST: "${HOST:-0.0.0.0}"
       PORT: "${PORT:-8000}"

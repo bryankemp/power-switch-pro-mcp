@@ -16,7 +16,6 @@ repos:
     rev: 24.1.1
     hooks:
       - id: black
-        language_version: python3.10
         args: [--line-length=100]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -29,6 +28,6 @@ repos:
     rev: v1.8.0
     hooks:
       - id: mypy
-        additional_dependencies: [types-all]
         args: [--config-file=pyproject.toml]
         exclude: ^(tests/|docs/)
+        additional_dependencies: []

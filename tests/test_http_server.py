@@ -3,7 +3,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from power_switch_pro_mcp import http_server
 
 
@@ -20,7 +19,9 @@ class TestGetDevice:
             device = http_server.get_device()
 
             assert device == mock_instance
-            mock_ps.assert_called_once_with("192.168.0.100", "admin", "test-password", use_https=False)
+            mock_ps.assert_called_once_with(
+                "192.168.0.100", "admin", "test-password", use_https=False
+            )
 
     def test_get_device_returns_cached_device(self, reset_device_singleton):
         """Test that get_device returns the cached device on subsequent calls."""
@@ -150,7 +151,9 @@ class TestPowerMetrics:
 class TestBulkOperations:
     """Tests for bulk operations."""
 
-    def test_bulk_outlet_operation_specific_outlets(self, mock_power_switch, reset_device_singleton):
+    def test_bulk_outlet_operation_specific_outlets(
+        self, mock_power_switch, reset_device_singleton
+    ):
         """Test bulk operation on specific outlets."""
         with patch("power_switch_pro_mcp.http_server.get_device", return_value=mock_power_switch):
             result = http_server.bulk_outlet_operation("on", [0, 2, 4])
@@ -165,4 +168,6 @@ class TestBulkOperations:
             result = http_server.bulk_outlet_operation("off", None)
 
             assert "Performed 'off' on all unlocked outlets" in result
-            mock_power_switch.outlets.bulk_operation.assert_called_once_with(locked=False, action="off")
+            mock_power_switch.outlets.bulk_operation.assert_called_once_with(
+                locked=False, action="off"
+            )
