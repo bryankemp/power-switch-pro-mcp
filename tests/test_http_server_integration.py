@@ -71,3 +71,18 @@ class TestHTTPServerStartup:
 
         # The module should import without error when env vars are set
         assert http_server is not None
+
+    def test_fastmcp_binds_to_all_interfaces(self):
+        """Test that FastMCP is configured to bind to 0.0.0.0 for container accessibility."""
+        from power_switch_pro_mcp import http_server
+
+        # Verify FastMCP instance is configured with correct host and port
+        assert hasattr(http_server.mcp, "settings"), "FastMCP instance missing settings"
+        assert http_server.mcp.settings.host == "0.0.0.0", (
+            f"FastMCP must bind to 0.0.0.0 for container accessibility, "
+            f"but is configured to bind to {http_server.mcp.settings.host}"
+        )
+        assert http_server.mcp.settings.port == 8000, (
+            f"FastMCP must bind to port 8000, "
+            f"but is configured to bind to port {http_server.mcp.settings.port}"
+        )
