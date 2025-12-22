@@ -23,15 +23,9 @@ An MCP (Model Context Protocol) server that provides tools for controlling and m
 ### Install from Source
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/bryankemp/power-switch-pro-mcp.git
 cd power-switch-pro-mcp
-pip install -e .
-```
-
-### Install from PyPI (when published)
-
-```bash
-pip install power-switch-pro-mcp
+pip install .
 ```
 
 ## Configuration
@@ -188,7 +182,7 @@ The easiest way to run the server is using the pre-built Docker image:
 
 ```bash
 # Pull the latest image
-docker pull ghcr.io/USERNAME/power-switch-pro-mcp:latest
+docker pull ghcr.io/bryankemp/power-switch-pro-mcp:latest
 
 # Run the container
 docker run -d \
@@ -197,10 +191,8 @@ docker run -d \
   -e POWER_SWITCH_PASSWORD="your-password" \
   -e POWER_SWITCH_USERNAME="admin" \
   --name power-switch-pro-mcp \
-  ghcr.io/USERNAME/power-switch-pro-mcp:latest
+  ghcr.io/bryankemp/power-switch-pro-mcp:latest
 ```
-
-**Note**: Replace `USERNAME` with your GitHub username (lowercase).
 
 ### Using Docker Compose (Recommended)
 
@@ -268,7 +260,7 @@ The workflow builds multi-platform images for:
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/bryankemp/power-switch-pro-mcp.git
 cd power-switch-pro-mcp
 
 # Install in editable mode with dev dependencies
