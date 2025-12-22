@@ -177,6 +177,25 @@ The HTTP server will be available at `http://localhost:8000` and supports the MC
 
 ## Docker Deployment
 
+### Using Pre-built Image from GitHub Container Registry
+
+The easiest way to run the server is using the pre-built Docker image:
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/USERNAME/power-switch-pro-mcp:latest
+
+# Run the container
+docker run -d \
+  -p 8000:8000 \
+  -e POWER_SWITCH_HOST="192.168.0.100" \
+  -e POWER_SWITCH_PASSWORD="your-password" \
+  --name power-switch-pro-mcp \
+  ghcr.io/USERNAME/power-switch-pro-mcp:latest
+```
+
+**Note**: Replace `USERNAME` with your GitHub username (lowercase).
+
 ### Using Docker Compose (Recommended)
 
 ```bash
@@ -214,6 +233,27 @@ docker logs -f power-switch-pro-mcp
 # Stop the container
 docker stop power-switch-pro-mcp
 ```
+
+## CI/CD
+
+This project uses GitHub Actions to automatically build and publish Docker images to GitHub Container Registry (ghcr.io).
+
+### Automated Docker Builds
+
+Docker images are automatically built and published:
+- **On every push to main**: Tagged as `latest` and `main-{sha}`
+- **On version tags** (e.g., `v1.0.0`): Tagged with semantic versions
+- **On pull requests**: Built but not published (for testing)
+
+The workflow builds multi-platform images for:
+- `linux/amd64` (x86_64)
+- `linux/arm64` (ARM64/Apple Silicon)
+
+### Available Tags
+
+- `latest` - Latest stable build from main branch
+- `v1.0.0`, `v1.0`, `v1` - Semantic version tags
+- `main-{sha}` - Specific commit from main branch
 
 ## Development
 

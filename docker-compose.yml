@@ -2,7 +2,12 @@ version: '3.8'
 
 services:
   power-switch-pro-mcp:
+    # Use pre-built image from GHCR (replace USERNAME with your GitHub username)
+    # image: ghcr.io/USERNAME/power-switch-pro-mcp:latest
+    
+    # Or build locally from source
     build: .
+    
     container_name: power-switch-pro-mcp
     ports:
       - "8000:8000"
