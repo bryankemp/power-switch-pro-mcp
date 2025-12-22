@@ -261,8 +261,8 @@ def bulk_outlet_operation(action: str, outlet_ids: list[int] | None = None) -> s
 
 
 if __name__ == "__main__":
-    # Run server with HTTP transport
+    # Run server with SSE (Server-Sent Events) transport for HTTP
     # Note: FastMCP runs on default host 0.0.0.0:8000
     # Port can be configured via environment variable in Docker
     logger.info("Starting Power Switch Pro MCP HTTP server on 0.0.0.0:8000")
-    mcp.run(transport="http")
+    mcp.run(transport="sse")
