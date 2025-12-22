@@ -10,9 +10,9 @@ ENV PYTHONUNBUFFERED=1 \
 # Create app directory
 WORKDIR /app
 
-# Install system dependencies if needed
+# Install system dependencies (git needed for installing from GitHub)
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy project files
@@ -22,7 +22,9 @@ COPY LICENSE ./
 COPY src/ ./src/
 
 # Install the package
+# Install power_switch_pro from GitHub tag to get latest version with fixes
 RUN pip install --upgrade pip && \
+    pip install git+https://github.com/bryankemp/power_switch_pro.git@v1.0.0 && \
     pip install .
 
 # Create non-root user for security
