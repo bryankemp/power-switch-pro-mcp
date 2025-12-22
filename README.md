@@ -296,16 +296,34 @@ black src && ruff check src && mypy src
 pytest
 ```
 
-### Pre-commit Hooks
+### Git Hooks
 
-Install pre-commit hooks to automatically check code before commits:
+The project includes automated git hooks for code quality and Docker testing:
+
+#### Pre-commit Hooks
+
+Automatically run on every commit:
+- Black code formatting
+- Ruff linting
+- mypy type checking
+- YAML/TOML validation
+
+#### Pre-push Hook
+
+Automatically run before every push:
+- Docker image build test
+- Container runtime verification
+- HTTP endpoint health check
+
+#### Installation
 
 ```bash
-# Install pre-commit
+# Install pre-commit framework
 pip install pre-commit
 
-# Install git hooks
+# Install all git hooks
 pre-commit install
+./hooks/install.sh
 
 # Run hooks manually on all files
 pre-commit run --all-files
@@ -321,7 +339,10 @@ power-switch-pro-mcp/
 │       ├── server.py          # Stdio MCP server implementation
 │       └── http_server.py     # HTTP MCP server implementation
 ├── docs/                       # Sphinx documentation
-├── tests/                      # Test suite (coming soon)
+├── tests/                      # Test suite
+├── hooks/                      # Git hooks
+│   ├── pre-push               # Pre-push hook (Docker testing)
+│   └── install.sh             # Hook installation script
 ├── Dockerfile                  # Docker container definition
 ├── docker-compose.yml         # Docker Compose configuration
 ├── .pre-commit-config.yaml    # Pre-commit hooks configuration

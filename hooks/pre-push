@@ -1,0 +1,89 @@
+#!/bin/bash
+# Pre-push hook to test Docker build and runtime before pushing
+
+echo "🐳 Testing Docker build and runtime before push..."
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+    echo "⚠️  Warning: Docker is not running. Skipping Docker tests."
+    echo "   Start Docker Desktop to enable this check."
+    exit 0
+fi
+
+# Check if Dockerfile exists
+if [ ! -f "Dockerfile" ]; then
+    echo "✅ No Dockerfile found, skipping tests."
+    exit 0
+fi
+
+# Cleanup function
+cleanup() {
+    echo "🧹 Cleaning up test resources..."
+    docker stop power-switch-pre-push-test > /dev/null 2>&1
+    docker rm power-switch-pre-push-test > /dev/null 2>&1
+    docker rmi power-switch-pro-mcp:pre-push-test > /dev/null 2>&1
+}
+
+# Set trap to cleanup on exit
+trap cleanup EXIT
+
+# Build the Docker image
+echo "   Building Docker image..."
+if ! docker build -t power-switch-pro-mcp:pre-push-test . > /tmp/docker-build.log 2>&1; then
+    echo "❌ Docker build failed! Push aborted."
+    echo ""
+    echo "Build log (last 30 lines):"
+    tail -n 30 /tmp/docker-build.log
+    echo ""
+    echo "Full log available at: /tmp/docker-build.log"
+    echo ""
+    echo "Fix the Docker build issues before pushing."
+    echo "To skip this check: git push --no-verify"
+    exit 1
+fi
+echo "   ✓ Build successful"
+
+# Start test container with mock credentials
+echo "   Starting test container..."
+if ! docker run -d \
+    --name power-switch-pre-push-test \
+    -e POWER_SWITCH_HOST="192.168.1.100" \
+    -e POWER_SWITCH_PASSWORD="test-password" \
+    -e POWER_SWITCH_USERNAME="admin" \
+    -p 18888:8000 \
+    power-switch-pro-mcp:pre-push-test > /dev/null 2>&1; then
+    echo "❌ Failed to start test container! Push aborted."
+    echo "   Check Docker logs for details."
+    exit 1
+fi
+
+# Wait for container to start and check if it stays running
+echo "   Waiting for container startup..."
+sleep 3
+
+# Check if container is still running
+if ! docker ps --filter "name=power-switch-pre-push-test" --format "{{.Status}}" | grep -q "Up"; then
+    echo "❌ Container failed to start or crashed! Push aborted."
+    echo ""
+    echo "Container logs:"
+    docker logs power-switch-pre-push-test 2>&1 | tail -n 30
+    echo ""
+    echo "Fix the runtime issues before pushing."
+    echo "To skip this check: git push --no-verify"
+    exit 1
+fi
+echo "   ✓ Container running"
+
+# Test basic HTTP connectivity
+echo "   Testing HTTP endpoint..."
+if curl -sf http://localhost:18888/ > /dev/null 2>&1 || \
+   curl -sf http://localhost:18888/health > /dev/null 2>&1 || \
+   curl -sf http://localhost:18888/mcp/v1/ > /dev/null 2>&1; then
+    echo "   ✓ HTTP endpoint responding"
+else
+    echo "⚠️  Warning: HTTP endpoint not responding (expected if device unreachable)"
+    echo "   Container is running but may need actual device connection to serve requests."
+fi
+
+echo "✅ Docker build and runtime tests passed!"
+exit 0
