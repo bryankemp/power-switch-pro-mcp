@@ -43,7 +43,14 @@ def get_device() -> PowerSwitchPro:
 
 
 # Create FastMCP server with stateless HTTP and JSON responses (recommended for production)
-mcp = FastMCP("power-switch-pro", stateless_http=True, json_response=True)
+# Configure to bind to 0.0.0.0:8000 for container accessibility
+mcp = FastMCP(
+    "power-switch-pro",
+    stateless_http=True,
+    json_response=True,
+    host="0.0.0.0",
+    port=8000,
+)
 
 
 @mcp.tool()
