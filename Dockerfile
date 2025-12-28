@@ -34,7 +34,7 @@ RUN useradd -m -u 1000 mcpuser && \
 USER mcpuser
 
 # Expose port for HTTP server
-EXPOSE 8000
+EXPOSE 5000
 
 # Default to HTTP server (can be overridden)
 CMD ["python", "-m", "power_switch_pro_mcp.http_server"]

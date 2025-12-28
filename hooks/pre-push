@@ -50,7 +50,7 @@ if ! docker run -d \
     -e POWER_SWITCH_HOST="192.168.1.100" \
     -e POWER_SWITCH_PASSWORD="test-password" \
     -e POWER_SWITCH_USERNAME="admin" \
-    -p 18888:8000 \
+    -p 18888:5000 \
     power-switch-pro-mcp:pre-push-test > /dev/null 2>&1; then
     echo "❌ Failed to start test container! Push aborted."
     echo "   Check Docker logs for details."

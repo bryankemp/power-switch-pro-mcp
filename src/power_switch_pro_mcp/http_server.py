@@ -43,13 +43,16 @@ def get_device() -> PowerSwitchPro:
 
 
 # Create FastMCP server with stateless HTTP and JSON responses (recommended for production)
-# Configure to bind to 0.0.0.0:8000 for container accessibility
+# Configure to bind to 0.0.0.0 with configurable port (default 5000)
+DEFAULT_PORT = 5000
+port = int(os.getenv("PORT", DEFAULT_PORT))
+
 mcp = FastMCP(
     "power-switch-pro",
     stateless_http=True,
     json_response=True,
     host="0.0.0.0",
-    port=8000,
+    port=port,
 )
 
 
@@ -270,7 +273,6 @@ def bulk_outlet_operation(action: str, outlet_ids: list[int] | None = None) -> s
 
 if __name__ == "__main__":
     # Run server with SSE (Server-Sent Events) transport for HTTP
-    # Note: FastMCP runs on default host 0.0.0.0:8000
-    # Port can be configured via environment variable in Docker
-    logger.info("Starting Power Switch Pro MCP HTTP server on 0.0.0.0:8000")
+    # Port can be configured via PORT environment variable (default: 5000)
+    logger.info(f"Starting Power Switch Pro MCP HTTP server on 0.0.0.0:{port}")
     mcp.run(transport="sse")

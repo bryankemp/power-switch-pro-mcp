@@ -165,14 +165,14 @@ export POWER_SWITCH_HOST="192.168.0.100"
 export POWER_SWITCH_PASSWORD="your-password"
 export POWER_SWITCH_USERNAME="admin"  # Optional, defaults to "admin"
 
-# Run the HTTP server (default port 8000)
+# Run the HTTP server (default port 5000)
 python -m power_switch_pro_mcp.http_server
 
 # Or specify a custom port
 PORT=3000 python -m power_switch_pro_mcp.http_server
 ```
 
-The HTTP server will be available at `http://localhost:8000` and supports the MCP streamable-http protocol.
+The HTTP server will be available at `http://localhost:5000` and supports the MCP streamable-http protocol.
 
 ## Docker Deployment
 
@@ -186,7 +186,7 @@ docker pull ghcr.io/bryankemp/power-switch-pro-mcp:latest
 
 # Run the container
 docker run -d \
-  -p 8000:8000 \
+  -p 5000:5000 \
   -e POWER_SWITCH_HOST="192.168.0.100" \
   -e POWER_SWITCH_PASSWORD="your-password" \
   -e POWER_SWITCH_USERNAME="admin" \
@@ -219,7 +219,7 @@ docker build -t power-switch-pro-mcp .
 
 # Run the container
 docker run -d \
-  -p 8000:8000 \
+  -p 5000:5000 \
   -e POWER_SWITCH_HOST="192.168.0.100" \
   -e POWER_SWITCH_PASSWORD="your-password" \
   -e POWER_SWITCH_USERNAME="admin" \
