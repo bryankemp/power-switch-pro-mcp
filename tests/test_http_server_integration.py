@@ -82,7 +82,7 @@ class TestHTTPServerStartup:
             f"FastMCP must bind to 0.0.0.0 for container accessibility, "
             f"but is configured to bind to {http_server.mcp.settings.host}"
         )
-        assert http_server.mcp.settings.port == 8000, (
-            f"FastMCP must bind to port 8000, "
+        assert http_server.mcp.settings.port == 5000, (
+            f"FastMCP must bind to port 5000, "
             f"but is configured to bind to port {http_server.mcp.settings.port}"
         )
