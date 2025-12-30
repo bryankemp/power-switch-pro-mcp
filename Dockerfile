@@ -10,10 +10,10 @@ ENV PYTHONUNBUFFERED=1 \
 # Create app directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies (git needed for pip install from git)
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/* || true
+    apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy project files
 COPY pyproject.toml ./
