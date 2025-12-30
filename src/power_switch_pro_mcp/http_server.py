@@ -271,6 +271,186 @@ def bulk_outlet_operation(action: str, outlet_ids: list[int] | None = None) -> s
         return f"Unexpected error: {str(e)}"
 
 
+@mcp.tool()
+def autoping_add_entry(
+    host: str,
+    outlet_id: int,
+    enabled: bool = True,
+    interval: int = 60,
+    retries: int = 3,
+) -> str:
+    """Add an AutoPing entry to monitor a host and reset an outlet if ping fails.
+
+    Args:
+        host: Host to ping (IP address or hostname)
+        outlet_id: Outlet number (0-7 for 8-outlet device)
+        enabled: Whether entry is enabled (default: True)
+        interval: Ping interval in seconds (default: 60)
+        retries: Number of retries before cycling outlet (default: 3)
+    """
+    try:
+        device = get_device()
+        result = device.autoping.add_entry(
+            host=host,
+            outlet=outlet_id,
+            enabled=enabled,
+            interval=interval,
+            retries=retries,
+        )
+        return f"Added AutoPing entry for host {host} on outlet {outlet_id + 1}\n{result}"
+    except PowerSwitchError as e:
+        logger.error(f"Power Switch error in autoping_add_entry: {e}")
+        return f"Error: {str(e)}"
+    except Exception as e:
+        logger.error(f"Unexpected error in autoping_add_entry: {e}")
+        return f"Unexpected error: {str(e)}"
+
+
+@mcp.tool()
+def autoping_list_entries() -> str:
+    """List all AutoPing entries configured on the device."""
+    try:
+        device = get_device()
+        entries = device.autoping.list_entries()
+        if entries:
+            result = []
+            for i, entry in enumerate(entries):
+                result.append(
+                    f"Entry {i}:\n"
+                    f"  Host: {entry.get('host', 'N/A')}\n"
+                    f"  Outlet: {int(entry.get('outlet', -1)) + 1}\n"
+                    f"  Enabled: {entry.get('enabled', 'N/A')}\n"
+                    f"  Interval: {entry.get('interval', 'N/A')}s\n"
+                    f"  Retries: {entry.get('retries', 'N/A')}"
+                )
+            return "\n\n".join(result)
+        return "No AutoPing entries configured"
+    except PowerSwitchError as e:
+        logger.error(f"Power Switch error in autoping_list_entries: {e}")
+        return f"Error: {str(e)}"
+    except Exception as e:
+        logger.error(f"Unexpected error in autoping_list_entries: {e}")
+        return f"Unexpected error: {str(e)}"
+
+
+@mcp.tool()
+def autoping_get_entry(entry_id: int) -> dict[str, Any]:
+    """Get details of a specific AutoPing entry.
+
+    Args:
+        entry_id: AutoPing entry ID
+    """
+    try:
+        device = get_device()
+        entry = device.autoping.get_entry(entry_id)
+        return entry
+    except PowerSwitchError as e:
+        logger.error(f"Power Switch error in autoping_get_entry: {e}")
+        return {"error": str(e)}
+    except Exception as e:
+        logger.error(f"Unexpected error in autoping_get_entry: {e}")
+        return {"error": f"Unexpected error: {str(e)}"}
+
+
+@mcp.tool()
+def autoping_update_entry(
+    entry_id: int,
+    host: str | None = None,
+    outlet_id: int | None = None,
+    enabled: bool | None = None,
+    interval: int | None = None,
+    retries: int | None = None,
+) -> str:
+    """Update an existing AutoPing entry.
+
+    Args:
+        entry_id: AutoPing entry ID
+        host: New host to ping (optional)
+        outlet_id: New outlet number (optional)
+        enabled: New enabled status (optional)
+        interval: New ping interval in seconds (optional)
+        retries: New number of retries (optional)
+    """
+    try:
+        device = get_device()
+        success = device.autoping.update_entry(
+            entry_id=entry_id,
+            host=host,
+            outlet=outlet_id,
+            enabled=enabled,
+            interval=interval,
+            retries=retries,
+        )
+        status = "updated successfully" if success else "update failed"
+        return f"AutoPing entry {entry_id} {status}"
+    except PowerSwitchError as e:
+        logger.error(f"Power Switch error in autoping_update_entry: {e}")
+        return f"Error: {str(e)}"
+    except Exception as e:
+        logger.error(f"Unexpected error in autoping_update_entry: {e}")
+        return f"Unexpected error: {str(e)}"
+
+
+@mcp.tool()
+def autoping_delete_entry(entry_id: int) -> str:
+    """Delete an AutoPing entry.
+
+    Args:
+        entry_id: AutoPing entry ID
+    """
+    try:
+        device = get_device()
+        success = device.autoping.delete_entry(entry_id)
+        status = "deleted successfully" if success else "delete failed"
+        return f"AutoPing entry {entry_id} {status}"
+    except PowerSwitchError as e:
+        logger.error(f"Power Switch error in autoping_delete_entry: {e}")
+        return f"Error: {str(e)}"
+    except Exception as e:
+        logger.error(f"Unexpected error in autoping_delete_entry: {e}")
+        return f"Unexpected error: {str(e)}"
+
+
+@mcp.tool()
+def autoping_enable_entry(entry_id: int) -> str:
+    """Enable an AutoPing entry.
+
+    Args:
+        entry_id: AutoPing entry ID
+    """
+    try:
+        device = get_device()
+        success = device.autoping.enable_entry(entry_id)
+        status = "enabled successfully" if success else "enable failed"
+        return f"AutoPing entry {entry_id} {status}"
+    except PowerSwitchError as e:
+        logger.error(f"Power Switch error in autoping_enable_entry: {e}")
+        return f"Error: {str(e)}"
+    except Exception as e:
+        logger.error(f"Unexpected error in autoping_enable_entry: {e}")
+        return f"Unexpected error: {str(e)}"
+
+
+@mcp.tool()
+def autoping_disable_entry(entry_id: int) -> str:
+    """Disable an AutoPing entry.
+
+    Args:
+        entry_id: AutoPing entry ID
+    """
+    try:
+        device = get_device()
+        success = device.autoping.disable_entry(entry_id)
+        status = "disabled successfully" if success else "disable failed"
+        return f"AutoPing entry {entry_id} {status}"
+    except PowerSwitchError as e:
+        logger.error(f"Power Switch error in autoping_disable_entry: {e}")
+        return f"Error: {str(e)}"
+    except Exception as e:
+        logger.error(f"Unexpected error in autoping_disable_entry: {e}")
+        return f"Unexpected error: {str(e)}"
+
+
 if __name__ == "__main__":
     # Run server with SSE (Server-Sent Events) transport for HTTP
     # Port can be configured via PORT environment variable (default: 5000)
