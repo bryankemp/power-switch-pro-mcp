@@ -10,10 +10,10 @@ ENV PYTHONUNBUFFERED=1 \
 # Create app directory
 WORKDIR /app
 
-# Install system dependencies (git needed for pip install from git)
+# Install system dependencies
+# Note: git is no longer needed now that power_switch_pro is on PyPI
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends git \
-    && rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*
 
 # Copy project files
 COPY pyproject.toml ./
@@ -22,9 +22,9 @@ COPY LICENSE ./
 COPY src/ ./src/
 
 # Install the package
-# Install power_switch_pro from git to get latest autoping fixes
+# Install power_switch_pro from PyPI
 RUN pip install --upgrade pip && \
-    pip install "git+https://github.com/bryankemp/power_switch_pro.git@main" && \
+    pip install power_switch_pro && \
     pip install .
 
 # Create non-root user for security
