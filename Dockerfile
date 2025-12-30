@@ -22,9 +22,9 @@ COPY LICENSE ./
 COPY src/ ./src/
 
 # Install the package
-# Install power_switch_pro v1.1.0 from PyPI
+# Install power_switch_pro from git to get latest autoping fixes
 RUN pip install --upgrade pip && \
-    pip install "power-switch-pro>=1.1.0" && \
+    pip install "git+https://github.com/bryankemp/power_switch_pro.git@main" && \
     pip install .
 
 # Create non-root user for security
