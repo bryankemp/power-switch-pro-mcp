@@ -315,13 +315,25 @@ def autoping_list_entries() -> str:
         if entries:
             result = []
             for i, entry in enumerate(entries):
+                # Extract hosts from addresses array
+                hosts = entry.get("addresses", [])
+                host = hosts[0] if hosts else "N/A"
+                # Extract outlet from outlets array
+                outlets = entry.get("outlets", [])
+                outlet = outlets[0] if outlets else -1
+                # Get status info
+                status = entry.get("status", {})
+                host_status = status.get("hosts", [{}])[0] if status.get("hosts") else {}
+                success_count = host_status.get("success_count", 0)
+                failure_count = host_status.get("failure_count", 0)
+
                 result.append(
                     f"Entry {i}:\n"
-                    f"  Host: {entry.get('host', 'N/A')}\n"
-                    f"  Outlet: {int(entry.get('outlet', -1)) + 1}\n"
-                    f"  Enabled: {entry.get('enabled', 'N/A')}\n"
-                    f"  Interval: {entry.get('interval', 'N/A')}s\n"
-                    f"  Retries: {entry.get('retries', 'N/A')}"
+                    f"  Host: {host}\n"
+                    f"  Outlet: {outlet + 1}\n"
+                    f"  Enabled: {entry.get('enabled', False)}\n"
+                    f"  State: {'Active' if host_status.get('state') else 'Inactive'}\n"
+                    f"  Success: {success_count} | Failures: {failure_count}"
                 )
             return "\n\n".join(result)
         return "No AutoPing entries configured"
