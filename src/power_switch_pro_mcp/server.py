@@ -190,6 +190,147 @@ async def list_tools() -> list[Tool]:
                 "required": ["action"],
             },
         ),
+        Tool(
+            name="autoping_add_entry",
+            description="Add an AutoPing entry to monitor a host and reset an outlet if ping fails",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "host": {
+                        "type": "string",
+                        "description": "Host to ping (IP address or hostname)",
+                    },
+                    "outlet_id": {
+                        "type": "integer",
+                        "description": "Outlet number (0-7 for 8-outlet device)",
+                        "minimum": 0,
+                        "maximum": 7,
+                    },
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Whether entry is enabled",
+                        "default": True,
+                    },
+                    "interval": {
+                        "type": "integer",
+                        "description": "Ping interval in seconds",
+                        "default": 60,
+                        "minimum": 1,
+                    },
+                    "retries": {
+                        "type": "integer",
+                        "description": "Number of retries before cycling outlet",
+                        "default": 3,
+                        "minimum": 1,
+                    },
+                },
+                "required": ["host", "outlet_id"],
+            },
+        ),
+        Tool(
+            name="autoping_list_entries",
+            description="List all AutoPing entries configured on the device",
+            inputSchema={"type": "object", "properties": {}},
+        ),
+        Tool(
+            name="autoping_get_entry",
+            description="Get details of a specific AutoPing entry",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "entry_id": {
+                        "type": "integer",
+                        "description": "AutoPing entry ID",
+                        "minimum": 0,
+                    }
+                },
+                "required": ["entry_id"],
+            },
+        ),
+        Tool(
+            name="autoping_update_entry",
+            description="Update an existing AutoPing entry",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "entry_id": {
+                        "type": "integer",
+                        "description": "AutoPing entry ID",
+                        "minimum": 0,
+                    },
+                    "host": {
+                        "type": "string",
+                        "description": "New host to ping (optional)",
+                    },
+                    "outlet_id": {
+                        "type": "integer",
+                        "description": "New outlet number (optional)",
+                        "minimum": 0,
+                        "maximum": 7,
+                    },
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "New enabled status (optional)",
+                    },
+                    "interval": {
+                        "type": "integer",
+                        "description": "New ping interval in seconds (optional)",
+                        "minimum": 1,
+                    },
+                    "retries": {
+                        "type": "integer",
+                        "description": "New number of retries (optional)",
+                        "minimum": 1,
+                    },
+                },
+                "required": ["entry_id"],
+            },
+        ),
+        Tool(
+            name="autoping_delete_entry",
+            description="Delete an AutoPing entry",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "entry_id": {
+                        "type": "integer",
+                        "description": "AutoPing entry ID",
+                        "minimum": 0,
+                    }
+                },
+                "required": ["entry_id"],
+            },
+        ),
+        Tool(
+            name="autoping_enable_entry",
+            description="Enable an AutoPing entry",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "entry_id": {
+                        "type": "integer",
+                        "description": "AutoPing entry ID",
+                        "minimum": 0,
+                    }
+                },
+                "required": ["entry_id"],
+            },
+        ),
+        Tool(
+            name="autoping_disable_entry",
+            description="Disable an AutoPing entry",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "entry_id": {
+                        "type": "integer",
+                        "description": "AutoPing entry ID",
+                        "minimum": 0,
+                    }
+                },
+                "required": ["entry_id"],
+            },
+        ),
     ]
 
 
@@ -284,6 +425,84 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
                 msg = f"Performed '{action}' on all unlocked outlets"
 
             return [TextContent(type="text", text=msg)]
+
+        elif name == "autoping_add_entry":
+            host = arguments["host"]
+            outlet_id = arguments["outlet_id"]
+            enabled = arguments.get("enabled", True)
+            interval = arguments.get("interval", 60)
+            retries = arguments.get("retries", 3)
+
+            result = device.autoping.add_entry(
+                host=host,
+                outlet=outlet_id,
+                enabled=enabled,
+                interval=interval,
+                retries=retries,
+            )
+            msg = (
+                f"Added AutoPing entry for host {host} on outlet {outlet_id + 1}\n"
+                f"{json.dumps(result, indent=2)}"
+            )
+            return [TextContent(type="text", text=msg)]
+
+        elif name == "autoping_list_entries":
+            entries = device.autoping.list_entries()
+            if entries:
+                result = []
+                for i, entry in enumerate(entries):
+                    result.append(
+                        f"Entry {i}:\n"
+                        f"  Host: {entry.get('host', 'N/A')}\n"
+                        f"  Outlet: {int(entry.get('outlet', -1)) + 1}\n"
+                        f"  Enabled: {entry.get('enabled', 'N/A')}\n"
+                        f"  Interval: {entry.get('interval', 'N/A')}s\n"
+                        f"  Retries: {entry.get('retries', 'N/A')}"
+                    )
+                return [TextContent(type="text", text="\n\n".join(result))]
+            return [TextContent(type="text", text="No AutoPing entries configured")]
+
+        elif name == "autoping_get_entry":
+            entry_id = arguments["entry_id"]
+            entry = device.autoping.get_entry(entry_id)
+            return [TextContent(type="text", text=json.dumps(entry, indent=2))]
+
+        elif name == "autoping_update_entry":
+            entry_id = arguments["entry_id"]
+            host = arguments.get("host")
+            outlet_id = arguments.get("outlet_id")
+            enabled = arguments.get("enabled")
+            interval = arguments.get("interval")
+            retries = arguments.get("retries")
+
+            success = device.autoping.update_entry(
+                entry_id=entry_id,
+                host=host,
+                outlet=outlet_id,
+                enabled=enabled,
+                interval=interval,
+                retries=retries,
+            )
+            status = "updated successfully" if success else "update failed"
+            return [TextContent(type="text", text=f"AutoPing entry {entry_id} {status}")]
+
+        elif name == "autoping_delete_entry":
+            entry_id = arguments["entry_id"]
+            success = device.autoping.delete_entry(entry_id)
+            status = "deleted successfully" if success else "delete failed"
+            return [TextContent(type="text", text=f"AutoPing entry {entry_id} {status}")]
+
+        elif name == "autoping_enable_entry":
+            entry_id = arguments["entry_id"]
+            success = device.autoping.enable_entry(entry_id)
+            status = "enabled successfully" if success else "enable failed"
+            return [TextContent(type="text", text=f"AutoPing entry {entry_id} {status}")]
+
+        elif name == "autoping_disable_entry":
+            entry_id = arguments["entry_id"]
+            success = device.autoping.disable_entry(entry_id)
+            status = "disabled successfully" if success else "disable failed"
+            return [TextContent(type="text", text=f"AutoPing entry {entry_id} {status}")]
 
         else:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]
